@@ -25,7 +25,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Beam"></activity>
+        <activity android:name=".Beam"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.nfc.action.NDEF_DISCOVERED"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:host="ext"
+                    android:pathPrefix="/com.example.user.parkinglot"
+                    android:scheme="vnd.android.nfc"/>
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
