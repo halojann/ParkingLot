@@ -34,6 +34,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -202,7 +203,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private boolean NotifySelection(String lotname, String lat, String lon) {
 
         Log.d("Marker clicked :", lotname + "@" + lat + "," + lon);
-        //todo send these to server
+
+        //send these to server
+        String server_url = "";
+        JSONObject json = new JSONObject();
+
+        try {
+            json.put("LotName", lotname);
+            json.put("lat", lat);
+            json.put("lon", lon);
+        } catch (JSONException j) {
+            j.printStackTrace();
+        }
+
+        new SendtoServer().execute(server_url, json.toString());
+
         return false;
     }
 
@@ -294,6 +309,55 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
 
             }
+        }
+    }
+
+    private class SendtoServer extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            String data = "";
+
+            HttpURLConnection httpURLConnection = null;
+            try {
+
+                //connect to url
+                httpURLConnection = (HttpURLConnection) new URL(params[0]).openConnection();
+                httpURLConnection.setRequestMethod("POST");
+                httpURLConnection.setDoOutput(true);
+
+                //POST JSON.tostring()
+                DataOutputStream wr = new DataOutputStream(httpURLConnection.getOutputStream());
+                wr.writeBytes("PostData=" + params[1]);
+                wr.flush();
+                wr.close();
+
+                //get response
+                InputStream in = httpURLConnection.getInputStream();
+                InputStreamReader inputStreamReader = new InputStreamReader(in);
+
+                int inputStreamData = inputStreamReader.read();
+                while (inputStreamData != -1) {
+                    char current = (char) inputStreamData;
+                    inputStreamData = inputStreamReader.read();
+                    data += current;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (httpURLConnection != null) {
+                    httpURLConnection.disconnect();
+                }
+            }
+
+            return data;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            Log.e("result: ", result);
         }
     }
 }
