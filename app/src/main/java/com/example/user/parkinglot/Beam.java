@@ -19,7 +19,7 @@ public class Beam extends Activity implements NfcAdapter.CreateNdefMessageCallba
     public NdefMessage createNdefMessage(NfcEvent event) {
         NdefMessage msg = new NdefMessage(
                 new NdefRecord[] {
-                        NdefRecord.createExternal("com.example.user.parkinglot","key", token)
+                        NdefRecord.createExternal("com.example.user.parkinglot", "tkn", token)
 //                new NdefRecord[] { NdefRecord.createMime(
 //                        "application/acer.example.com.nfcbeam", keyfortransfer)
                 });
