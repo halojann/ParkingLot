@@ -178,7 +178,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             "&sensor=true" +
                             "&key=" + getResources().getString(R.string.google_maps_key);
 
-                    Log.d("query URL: ", googlePlacesUrl);
+                    //Log.d("query URL: ", googlePlacesUrl);
 
                     //query
                     new getJSON().execute(googlePlacesUrl);
@@ -205,7 +205,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Log.d("Marker clicked :", lotname + "@" + lat + "," + lon);
 
         //send these to server
-        String server_url = "";
+        String server_url = "http://10.109.106.250:8000/accounts/hello/";
         JSONObject json = new JSONObject();
 
         try {
@@ -216,7 +216,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             j.printStackTrace();
         }
 
+        Log.d("json to send: ", json.toString());
         new SendtoServer().execute(server_url, json.toString());
+
 
         return false;
     }
@@ -243,7 +245,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 while ((line = reader.readLine()) != null) {
                     buffer.append(line).append("\n");
-                    Log.d("Response: ", "> " + line);
+                    //Log.d("Response: ", "> " + line);
 
                 }
                 return new JSONObject(buffer.toString());
@@ -327,6 +329,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 httpURLConnection.setRequestMethod("POST");
                 httpURLConnection.setDoOutput(true);
 
+                //httpURLConnection.setRequestProperty("User-Agent","Mozilla/5.0 ( compatible ) ");
+                //httpURLConnection.setRequestProperty("Accept","*/*");
+
                 //POST JSON.tostring()
                 DataOutputStream wr = new DataOutputStream(httpURLConnection.getOutputStream());
                 wr.writeBytes("PostData=" + params[1]);
@@ -334,7 +339,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 wr.close();
 
                 //get response
+                Log.d("Response code: ", (String.valueOf(httpURLConnection.getResponseCode())));
                 InputStream in = httpURLConnection.getInputStream();
+
                 InputStreamReader inputStreamReader = new InputStreamReader(in);
 
                 int inputStreamData = inputStreamReader.read();
@@ -357,7 +364,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            Log.e("result: ", result);
+            Log.d("json sent ; response: ", result);
         }
     }
 }
