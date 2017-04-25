@@ -1,7 +1,9 @@
 package com.example.user.parkinglot;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
@@ -362,9 +364,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         @Override
-        protected void onPostExecute(String result) {
+        protected void onPostExecute(final String result) {
             super.onPostExecute(result);
             Log.d("json sent ; response: ", result);
+
+            new AlertDialog.Builder(getApplicationContext())
+                    .setTitle("Confirm selection")
+                    .setMessage("Pick this lot?")
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            Toast.makeText(getApplicationContext(), "please wait", Toast.LENGTH_SHORT).show();
+                            //Launch Reserve lot activity
+
+                            Intent reserve = new Intent(com.example.user.parkinglot.MapsActivity.this, com.example.user.parkinglot.ReserveLot.class);
+                            reserve.putExtra("response", result);
+                            startActivity(reserve);
+                        }
+                    })
+                    .setNegativeButton(android.R.string.no, null).show();
         }
     }
 }

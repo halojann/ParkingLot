@@ -2,4 +2,5 @@
     <string name="app_name">ParkingLot</string>
     <string name="title_activity_maps">Map</string>
     <string name="nearby">Nearby Lots</string>
+    <string name="title_activity_reserve_lot">ReserveLot</string>
 </resources>
