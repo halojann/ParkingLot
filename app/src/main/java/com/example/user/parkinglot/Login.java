@@ -77,7 +77,7 @@ public class Login extends Activity {
                 connection.setUseCaches(false);
                 //connection.setChunkedStreamingMode(0);
                 connection.setRequestMethod("POST");
-                account.put("account","Chenglong Fu");
+                account.put("username","Chenglong Fu");
                 account.put("password","fcl199303");
                 connection.getOutputStream().write(String.valueOf(account).getBytes());//把数据以流的方式写给服务器。
                 connection.getOutputStream().close();
@@ -106,10 +106,10 @@ public class Login extends Activity {
             JSONObject out = null;
             try {
                 out = new JSONObject(result);
-                if(out.getString("code").equals("invalid")){
+                if(out.getString("status").equals("invalid")){
                     Toast.makeText(com.example.user.parkinglot.Login.this,"login failed, please check the input or sign up",Toast.LENGTH_LONG).show();
                 }
-                if(out.getString("code").equals("invalid")){
+                if(out.getString("status").equals("valid")){
                     Intent gotomap = new Intent(com.example.user.parkinglot.Login.this,com.example.user.parkinglot.MapsActivity.class);
                     gotomap.putExtra("username",acc.getText().toString());
                     gotomap.putExtra("password",psw.getText().toString());
