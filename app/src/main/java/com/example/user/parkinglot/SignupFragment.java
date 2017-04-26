@@ -26,13 +26,13 @@ public class SignupFragment extends Fragment implements OnClickListener
 {
     TextView acc,psw,conpsw,email,phone;
     private Button button_login,button_signup;
-
+    final SignupFragment.HttpProcess httpProcess = new SignupFragment.HttpProcess();
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.signup_fragment, container, false);
 
-        final SignupFragment.HttpProcess httpProcess = new SignupFragment.HttpProcess();
+
 
         acc = (TextView) view.findViewById(R.id.editText1);
         psw = (TextView) view.findViewById(R.id.editText2);
