@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="com.example.user.parkinglot.Login">
+    tools:context="com.example.user.parkinglot.SignupFragment">
 
     <LinearLayout
         android:layout_width="373dp"
@@ -14,7 +14,7 @@
         tools:layout_editor_absoluteX="8dp">
 
         <EditText
-            android:id="@+id/editText"
+            android:id="@+id/editText1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
@@ -31,17 +31,40 @@
             android:hint="password"
             android:inputType="textPassword" />
 
-        <Button
-            android:id="@+id/button_login"
+        <EditText
+            android:id="@+id/editText3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Login" />
+            android:ems="10"
+            android:hint="conform password"
+            android:inputType="textPassword" />
+
+        <EditText
+            android:id="@+id/editText4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="email"
+            android:inputType="textEmailSubject" />
+        <EditText
+            android:id="@+id/editText6"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="phone"
+            android:inputType="textPhonetic" />
 
         <Button
             android:id="@+id/button_signup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Sign Up" />
+            android:text="SIGN UP" />
+
+        <Button
+            android:id="@+id/button_login"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="LOGIN" />
 
         <FrameLayout
             android:id="@+id/content"
@@ -52,7 +75,5 @@
 
     </LinearLayout>
 
-
 </android.support.constraint.ConstraintLayout>
-
 

@@ -1,17 +1,19 @@
 package com.example.user.parkinglot;
 
-import android.app.Activity;
-import android.content.Context;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,27 +22,33 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-abstract class Login extends Activity implements View.OnClickListener{
-
+public class LoginFragment extends Fragment implements OnClickListener
+{
     TextView acc,psw;
-    Button button_login,button_signup;
+    private Button button_login,button_signup;
+    final LoginFragment.HttpProcess httpProcess = new LoginFragment.HttpProcess();
 
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.login_fragment, container, false);
+
+
+
+        acc = (TextView) view.findViewById(R.id.editText1);
+        psw = (TextView) view.findViewById(R.id.editText2);
+        button_signup = (Button) view.findViewById(R.id.button_signup);
+        button_login = (Button) view.findViewById(R.id.button_login);
+        button_signup.setOnClickListener(this);
+        button_login.setOnClickListener(this);
+        return view ;
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
-        final HttpProcess httpProcess= new HttpProcess();
+    public void onClick(View v)
+    {
+        switch (v.getId()){
 
-        Toolbar toolbar;
-        acc = (TextView) findViewById(R.id.editText);
-        psw = (TextView) findViewById(R.id.editText2);
-        button_signup = (Button) findViewById(R.id.button_signup);
-        button_login = (Button) findViewById(R.id.button_login);
-        button_login.setOnClickListener(new View.OnClickListener(){
-
-            @Override
-            public void onClick(View v) {
+            case R.id.button_login:
                 JSONObject send = null;
                 try {
                     send.put("account",acc.getText().toString()) ;
@@ -50,19 +58,20 @@ abstract class Login extends Activity implements View.OnClickListener{
                 }
                 httpProcess.setcontent("http://10.109.106.250:8000/accounts/hello/",send);
                 httpProcess.execute();
-            }
-        });
-        button_signup.setOnClickListener(new View.OnClickListener(){
+                break;
+            case R.id.button_signup:
+                SignupFragment fTwo = new SignupFragment();
+                FragmentManager fm = getFragmentManager();
+                FragmentTransaction tx = fm.beginTransaction();
+                tx.replace(R.id.id_content, fTwo, "TWO");
+                tx.addToBackStack(null);
+                tx.commit();
+                break;
 
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-
+        }
     }
 
-    private class HttpProcess extends AsyncTask<String, Void, String> {
+    public class HttpProcess extends AsyncTask<String, Void, String> {
         String destination =null;
         JSONObject content = null;
         @Override
@@ -112,10 +121,10 @@ abstract class Login extends Activity implements View.OnClickListener{
             try {
                 out = new JSONObject(result);
                 if(out.getString("status").equals("invalid")){
-                    Toast.makeText(com.example.user.parkinglot.Login.this,"login failed, please check the input or sign up",Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(),"login failed, please check the input or sign up",Toast.LENGTH_LONG).show();
                 }
                 if(out.getString("status").equals("valid")){
-                    Intent gotomap = new Intent(com.example.user.parkinglot.Login.this,com.example.user.parkinglot.MapsActivity.class);
+                    Intent gotomap = new Intent(getActivity(),com.example.user.parkinglot.MapsActivity.class);
                     gotomap.putExtra("username",acc.getText().toString());
                     gotomap.putExtra("password",psw.getText().toString());
                     startActivity(gotomap);
@@ -133,6 +142,5 @@ abstract class Login extends Activity implements View.OnClickListener{
         }
 
     }
-
 
 }
