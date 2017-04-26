@@ -31,16 +31,16 @@
             android:inputType="textPassword" />
 
         <Button
-            android:id="@+id/button2"
+            android:id="@+id/button_login"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Login" />
 
         <Button
-            android:id="@+id/button3"
+            android:id="@+id/button_signup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Sing Up" />
+            android:text="Sign Up" />
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

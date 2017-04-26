@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,21 +18,22 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class Login extends Activity {
+abstract class Login extends Activity implements View.OnClickListener{
 
     TextView acc,psw;
-    Button button3,button2;
+    Button button_login,button_signup;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         final HttpProcess httpProcess= new HttpProcess();
 
+        Toolbar toolbar;
         acc = (TextView) findViewById(R.id.editText);
         psw = (TextView) findViewById(R.id.editText2);
-        button3 = (Button) findViewById(R.id.button3);
-        button2 = (Button) findViewById(R.id.button2);
-        button3.setOnClickListener(new View.OnClickListener(){
+        button_signup = (Button) findViewById(R.id.button_signup);
+        button_login = (Button) findViewById(R.id.button_login);
+        button_login.setOnClickListener(new View.OnClickListener(){
 
             @Override
             public void onClick(View v) {
@@ -46,7 +48,7 @@ public class Login extends Activity {
                 httpProcess.execute();
             }
         });
-        button2.setOnClickListener(new View.OnClickListener(){
+        button_signup.setOnClickListener(new View.OnClickListener(){
 
             @Override
             public void onClick(View v) {
@@ -55,7 +57,6 @@ public class Login extends Activity {
         });
 
     }
-
 
     private class HttpProcess extends AsyncTask<String, Void, String> {
         String destination =null;
