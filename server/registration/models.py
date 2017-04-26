@@ -33,6 +33,7 @@ class ParkingLot(models.Model):
     close_time = models.DateTimeField("Business Time To")
     email = models.CharField(max_length=50)
     phone = models.CharField(max_length=20)
+    map = models.ImageField(upload_to='img/')
     def __str__(self):
         return self.lotname
 

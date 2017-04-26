@@ -76,10 +76,10 @@ def reserve(request):
             lot = ParkingLot.objects.get(lotname=lotname)
             if (end - lot.close_time).seconds <= 0: # duration is proper before close time
                 remaining_dict = json.loads(lot.remaining_number)
-                remaining_number = remaining_dict[str(start)]
+                remaining_number = remaining_dict[str(start.hour)]
                 if remaining_number > 0:                   
                     #update the database
-                    remaining_dict[str(start)] -= 1
+                    remaining_dict[str(start.hour)] -= 1
                     lot.remaining_number = json.dumps(remaining_dict)
                     lot.save() 
 #                     uid = User.objects.get(username=username).uid
@@ -94,7 +94,7 @@ def reserve(request):
                         rsakey = RSA.importKey(f.read())
                         digest = SHA.new()
                         digest.update(message)
-                        signature = base64.b64encodstCS1_PSS.new(rsakey).sign(digest))
+                        signature = base64.b64encodstCS1_PSS.new(rsakey).sign(digest)
 
                     response['token'] = signature
                     response['start'] = str(start)

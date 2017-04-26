@@ -32,10 +32,8 @@ def arrive(request):
         if transaction_no:
             reservation = Reserving.objects.get(transaction_no=transaction_no)
             start = datatime.now()
-            lot = reservation.lot
-            user = reservation.user
-#             lot = ParkingLot.objects.get(username=username_lot)
-#             user = User.objects.get(username=username_user)
+#             lot = reservation.lot
+#             user = reservation.user
             reservation.start_time = start
             reservation.save()
             response['status'] = '11' #successful
@@ -46,5 +44,30 @@ def arrive(request):
 
 @csrf_exempt
 def leave(request):
-    
-    return
+    status=str()
+    response = {}
+    if request.method == 'POST':
+        try:
+            data = json.loads(request)
+        except:
+            response['status'] = '10' # request fails
+            return JsonResponse(response)
+#         username_lot = data['username_lot']
+#         username_user = data['username_user']
+        transaction_no = data['transaction_no']
+        if transaction_no:
+            # update the end_time to the real leave time
+            reservation = Reserving.objects.get(transaction_no=transaction_no)
+            end = datatime.now()
+            reservation.end_time = end 
+            reservation.save()
+            # add 1 to the remaining space
+            lot = reservation.lot
+            remaining_dict = json.loads(lot.remaining_number)
+            remaining_dict[str(end.hour)] +=1
+            lot.remaining_number = json.dumps(remaining_dict)
+            lot.save()
+            response['status'] = '11' #successful
+        else:
+            response['status'] = '10' # request fails
+    return JsonResponse(response)

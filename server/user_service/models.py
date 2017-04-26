@@ -3,6 +3,8 @@ from django.db import models
 from django.utils import timezone
 from django.utils.encoding import python_2_unicode_compatible
 import datetime
+import sys
+sys.path.append('../')
 from registration.models import User, ParkingLot
 
 # Create your models here.
