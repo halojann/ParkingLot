@@ -9,8 +9,8 @@ from registration.models import User, ParkingLot
 @python_2_unicode_compatible
 class Reserving(models.Model):
     transaction_no = models.AutoField(primary_key=True)
-    uid = models.ForeignKey(User, on_delete=models.CASCADE)
-    pid = models.CharField(ParkingLot, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    lot = models.ForeignKey(ParkingLot, on_delete=models.CASCADE)
     start_time = models.DateTimeField("Reserving From")
     end_time = models.DateTimeField("Reserving To")    
     def __str__(self):

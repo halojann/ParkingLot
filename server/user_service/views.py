@@ -20,6 +20,7 @@ import base64
 from Crypto.Hash import SHA
 from Crypto.Signature import PKCS1_PSS
 from Crypto.PublicKey import RSA
+from .models import Reserving 
 # Create your views here.
 
 @csrf_exempt
@@ -30,27 +31,30 @@ def information(request):
         try:
             data = json.loads(request)
         except:
-            response['status'] = '10'
+            response['status'] = '10' #request fails
             return JsonResponse(response)
         lotname = data['parkinglot_name']
             #user = authenticate(request, username=usr_name, password=passwd)
         if lotname:
             lot = ParkingLot.objects.get(lotname=lotname)
-            response['total_number'] = lot.total_number
-            response['price_info'] = lot.price_info
-            response['start_time'] = lot.start_time
-            response['close_time'] = lot.close_time
-            response['email'] = lot.email
-            response['phone'] = lot.phone           
-            now = datetime.now()
-            remaining_dict = json.loads(lot.remaining_number)
-            remaining_number = remaining_dict[str(now.hour)]
-            response['remaining_number'] = remaining_number
-            response['status'] = '11' 
-        else:
-            response['status'] = '00' # no lot name was received
-    else:
-        response['status'] = '10'
+            if not lot:
+                response['total_number'] = lot.total_number
+                response['price_info'] = lot.price_info
+                response['start_time'] = lot.start_time
+                response['close_time'] = lot.close_time
+                response['email'] = lot.email
+                response['phone'] = lot.phone           
+                now = datetime.now()
+                remaining_dict = json.loads(lot.remaining_number)
+                remaining_number = remaining_dict[str(now.hour)]
+                response['remaining_number'] = remaining_number
+                response['status'] = '11' #successful
+            else:
+                response['status'] = '00' # not exist
+#         else:
+#             response['status'] = '00' # no lot name was received
+#     else:
+#         response['status'] = '10' #request fails
     return JsonResponse(response)
 
 @csrf_exempt
@@ -78,16 +82,23 @@ def reserve(request):
                     remaining_dict[str(start)] -= 1
                     lot.remaining_number = json.dumps(remaining_dict)
                     lot.save() 
+#                     uid = User.objects.get(username=username).uid
+#                     pid = lot.pid
+                    #reservation = Reserving.objects.create(uid=uid, pid=pid, start_time=start, end_time=end)
+                    reservation = lot.reserving_set.create(tart_time=start, end_time=end)
+                    reservation.user = User.objects.get(username=username)
+                    reservation.save()
                     #generate a token
                     with open('master-private.pem') as f:
-                        message = username + lotname + start + end
+                        message = username + lotname + str(start) + str(end) + str(reservation.transaction_no)
                         rsakey = RSA.importKey(f.read())
                         digest = SHA.new()
                         digest.update(message)
-                        signature = base64.b64encode(PKCS1_PSS.new(rsakey).sign(digest))
+                        signature = base64.b64encodstCS1_PSS.new(rsakey).sign(digest))
+
                     response['token'] = signature
-                    response['start'] = start
-                    response['end'] = end
+                    response['start'] = str(start)
+                    response['end'] = str(end)
                     response['status'] = '11'
                 else:
                     response['status'] = '00' # no remaining space                   
