@@ -9,49 +9,31 @@ from django.contrib.auth.models import AbstractBaseUser, UserManager
 # Create your models here.
 
 @python_2_unicode_compatible
-class User(AbstractBaseUser):
+class User(models.Model):
     uid = models.AutoField(primary_key=True)
-    username = models.CharField(max_length=50)
+    username = models.CharField("UserName", max_length=20, unique=True)
     password = models.CharField(max_length=20)
     email = models.CharField(max_length=50)
+    phone = models.CharField(max_length=20)
     def __str__(self):
         return self.username
-
-@python_2_unicode_compatible
-class Question(models.Model):
-    question_text = models.CharField(max_length=200)
-    pub_date = models.DateTimeField('data published')
-    def __str__(self):
-        return self.question_text
-    def was_published_recently(self):
-        now = timezone.now()
-        return now >= self.pub_date >= now - datetime.timedelta(days=1)
-
-@python_2_unicode_compatible    
-class Choice(models.Model):
-    question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    choice_text = models.CharField(max_length=200)
-    votes = models.IntegerField(default=0)
-    def __str__(self):
-        return self.choice_text
     
-class Band(models.Model):
-    """A model of a rock band."""
-    name = models.CharField(max_length=200)
-    can_rock = models.BooleanField(default=True)
+    
+@python_2_unicode_compatible
+class ParkingLot(models.Model):
+    pid = models.AutoField(primary_key=True)
+    username = models.CharField(max_length=20, unique=True)
+    password = models.CharField(max_length=20)
+    lotname = models.CharField("ParkingLot Name", max_length=50, unique=True)
+    address = models.CharField("ParkingLot Address", max_length=100)
+    total_number = models.IntegerField()
+    remaining_number = models.CharField()
+    price_info = models.CharField(max_length=300)
+    start_time = models.DateTimeField("Business Time From")
+    close_time = models.DateTimeField("Business Time To")
+    email = models.CharField(max_length=50)
+    phone = models.CharField(max_length=20)
     def __str__(self):
-        return self.name
+        return self.lotname
 
-class Member(models.Model):
-    """A model of a rock band member."""
-    name = models.CharField("Member's name", max_length=200)
-    instrument = models.CharField(choices=(
-            ('g', "Guitar"),
-            ('b', "Bass"),
-            ('d', "Drums"),
-        ),
-        max_length=1
-    )
-    band = models.ForeignKey("Band")
-    def __str__(self):
-        return self.name  
+  

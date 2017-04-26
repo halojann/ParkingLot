@@ -22,5 +22,7 @@ urlpatterns = [
     
     url(r'^accounts/', include('registration.urls')),  
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^registration/', include('registration.urls')),
+    url(r'^registration/', include('registration.urls')),   
+    url(r'^userservice/', include('user_service.urls')),
+    url(r'^lotservice/', include('lot_service.urls')),
 ]

@@ -1,4 +1,4 @@
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
 #from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib import auth
@@ -9,62 +9,71 @@ from django.utils import timezone
 from django import forms
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
-from models import Question, Choice, User
+import json
+from models import User, ParkingLot
+
 # Create your views here.
-
-
-class RegisterForm(forms.Form):
-    username = forms.CharField()
-    email = forms.EmailField()
-    password = forms.CharField(widget=forms.PasswordInput)
-    password2 = forms.CharField(label='Confirm', widget=forms.PasswordInput)
-    def pwd_validate(self, p1, p2):
-        return p1 == p2
+@csrf_exempt
+def hello(request):
+    if request.method == 'POST':
+        data = {"content": "hello", "type":"greet" }
+        response = json.loads(request.body)
+        response['account'] = 'chihaotian'
+        response['password'] = '123456'
+        #return HttpResponse("hello world")
+        #response['LotName'] = 'Temple'
+        #reponse = {}
+        #response['data'] = request.POST['PostData']
+        #name = request.POST.get('account')
+        #name = name + "haha"
+        
+        #return HttpResponse(response['password'])
     
-class LoginForm(forms.Form):
-    username = forms.CharField()
-    password = forms.CharField(widget=forms.PasswordInput)
-    
-class ChangepwdForm(forms.Form):
-    username = forms.CharField()
-    password = forms.CharField(label='Old password', widget=forms.PasswordInput)
-    password1 = forms.CharField(label='New password', widget=forms.PasswordInput)
-    password2 = forms.CharField(label='Confirm password', widget=forms.PasswordInput)
+        return JsonResponse(response)
+
+def pwd_validate(p1, p2):
+    return p1 == p2
 
 @csrf_exempt
-def register(request):
-    error=[]
+def register_user(request):
+    status=str()
+    response = {}
     if request.method == 'POST':
-        form = RegisterForm(request.POST)
-        if form.is_valid():
-            data = form.cleaned_data
-            username = data['username']
-            email = data['email']
-            password = data['password']
-            password2 = data['password2']
+        try:
+            data = json.loads(request.body)
+        except:
+            # request fails
+            response['status'] = '10'
+            return JsonResponse(response)
+        username = data['username']
+        email = data['email']
+        phone = data['phone']
+        password = data['password']
+        password2 = data['password2']
+        if username and password and email and phone and password and password2:
             if not User.objects.all().filter(username=username):
-                if form.pwd_validate(password, password2):
-                    user = User.objects.create(username=username, password=password, email=email)
+                if pwd_validate(password, password2):
+                    user = User.objects.create(username=username, password=password, email=email, phone=phone)
                     user.save()
-                    login_validate(request, username, password)
-                    return render_to_response('registration/Welcome.html', {'user': username}, RequestContext(request))
+                    #login_validate(request, username, password)
+                    response['status'] = '11'
                 else:
-                    error.append('Please input the same password')
+                    response['status'] = '01'
             else:
-                error.append('The username has existed, please change your username')
+                #The username has existed, please change your username
+                response['status'] = '00'
         else:
-                error.append('Please input both username and password')
-        #return HttpResponse('Registered Successfully!')
-    
+            # information missing
+            response['status'] = '01'
     else:
-        form = RegisterForm()
-    return render_to_response('registration/register.html', {'form': form, 'error': error}, RequestContext(request))
+        response['status'] = '10'
+    return JsonResponse(response)
 
-def login_validate(request, user_name, pass_word):
+def login_validate(request, user_name, pass_word, table):
     try:
-        user = User.objects.get(username=user_name)
+        user = table.objects.get(username=user_name)
         if user.password == pass_word:
-            #user = authenticate(username=user_name, password=pass_word)
+            #user_auth = authenticate(username=user_name, password=pass_word)
             #auth.login(request, user)
             return 0
         else:
@@ -78,116 +87,109 @@ def login_validate(request, user_name, pass_word):
         return True
     return rtvalue
     """
+    
 @csrf_exempt   
-def mylogin(request):
-    error=[]
+def mylogin_user(request):
+    status=str()
+    response = {}
     if request.method == 'POST':
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            data = form.cleaned_data
-            usrname = data['username']
-            passwd = data['password']
+        try:
+            data = json.loads(request)
+        except:
+            response['status'] = '10'
+            return JsonResponse(response)
+        username = data['username']
+        password = data['password']
             #user = authenticate(request, username=usr_name, password=passwd)
-            result = login_validate(request, usrname, passwd)
+        if username and password:
+            result = login_validate(request, username, password, User)
             if result == 0:
-                return render_to_response('registration/Welcome.html', {'user':usrname}, RequestContext(request))
-            elif result == 2:
-                error.append('Username does not exist')
+                response['status'] = '11'
             else:
-                error.append('Please input the correct password')
-                return HttpResponse(usrname+passwd)
-                #return render_to_response('registration/registration/login.html', {'error': error, 'form': form}, RequestContext(request))
+                response['status'] = '00'
         else:
-            error.append('Please input both username and password')
+            response['status'] = '00'
             #return HttpResponse('2')
             #return render_to_response('registration/registration/login.html', {'error': error, 'form': form}, RequestContext(request))
     else:
-        form = LoginForm()
-    return render_to_response('registration/login.html', {'error': error, 'form': form}, RequestContext(request))
-@csrf_exempt
-def mylogout(request):
-    auth.logout(request)
-    return HttpResponseRedirect('/accounts/login/')
-
-@login_required
-def index(request):
-    latest_question_list = Question.objects.order_by('-pub_date')[:5]
-    context = {'latest_question_list': latest_question_list}
-    return render(request, 'registration/index.html', context)
+        response['status'] = '10'
+    return JsonResponse(response)
 
 @csrf_exempt
-def changepassword(request, username):
-    error = []
+def changepassword_user(request):
+    return
+
+@csrf_exempt
+def register_operator(request):
+    status=str()
+    response = {}
     if request.method == 'POST':
-        form = ChangepwdForm(request.POST)
-        if form.is_valid():
-            data = form.cleaned_data
-            user = authenticate(username=username,password=data['old_pwd'])
-            if user is not None:
-                if data['new_pwd']==data['new_pwd2']:
-                    newuser = User.objects.get(username__exact=username)
-                    newuser.set_password(data['new_pwd'])
-                    newuser.save()
-                    return HttpResponseRedirect('/login/')
+        try:
+            data = json.loads(request.body)
+        except:
+            # request fails
+            response['status'] = '10'
+            return JsonResponse(response)
+        username = data['username']
+        password = data['password']
+        password2 = data['password2']
+        lotname = data['lotname']
+        address = data['address']
+        total_number = data['total_number']
+        remaining_dict = dict(zip([str(each) for each in range(24)], list(total_number)*24))
+        remaining_number = json.loads(remaining_dict)
+        price_info = data['price_info']
+        start_time = data['start_time']
+        close_time = data['close_time']
+        email = data['email']
+        phone = data['phone']
+        if username and lotname and address and total_number and remaining_number and price_info and start_time and close_time and email and phone and password and password2:
+            if not ParkingLot.objects.all().filter(username=username):
+                if pwd_validate(password, password2):
+                    parking_lot = ParkingLot.objects.create(username=username, password=password, lotname=lotname, address=address, 
+                                                     total_number=total_number, remaining_number=remaining_number, price_info=price_info, 
+                                                     start_time=start_time, close_time=close_time, email=email, phone=phone)
+                    parking_lot.save()
+                    #login_validate(request, username, password)
+                    response['status'] = '11'
                 else:
-                    error.append('Please input the same password')
+                    response['status'] = '01'
             else:
-                error.append('Please correct the old password')
+                #The username has existed, please change your username
+                response['status'] = '00'
         else:
-            error.append('Please input the required domain')
+            # information missing
+            response['status'] = '01'
     else:
-        form = ChangepwdForm()
-    return render_to_response('registration/changepassword.html',{'form':form,'error':error}, RequestContext(request))
+        response['status'] = '10'
+    return JsonResponse(response)
 
-
-"""
-def login(request):
-    template_name = 'registration/account/1.html'
-    context = {'login_err': 'Login Error!'}
-    return der(request, template_name)
-    #return HttpResponse('you need to login first')
-"""    
-"""
-class IndexView(generic.ListView):
-    template_name = 'registration/index.html'
-    context_object_name = 'latest_question_list'
-    #@login_required
-    def get_queryset(self):
-        return Question.objects.filter(pub_date__lte=timezone.now()).order_by('-pub_date')[:5]
-    #return render(request, 'registration/index.html', context)
-    #return HttpResponse(template.render(context, request))
-"""
-
-@login_required
-def detail(request, question_id):
-    question = get_object_or_404(Question, pk=question_id)
-    return render(request, 'registration/detail.html', {'question': question})
-
-@login_required
-def results(request, question_id):
-    question = get_object_or_404(Question, pk=question_id)
-    return render(request, 'registration/results.html', {'question': question})
-
-@login_required
-def vote(request, question_id):
-    question = get_object_or_404(Question, pk=question_id)
-    try:
-        selected_choice = question.choice_set.get(pk=request.POST['choice'])
-    except(KeyError, Choice.DoesNotExist):
-        return render(request, 'registration/detail.html', {
-            'question': question,
-            'error_message': "You didn't select a choice.",
-        })
+@csrf_exempt
+def mylogin_operator(request):
+    status=str()
+    response = {}
+    if request.method == 'POST':
+        try:
+            data = json.loads(request)
+        except:
+            response['status'] = '10'
+            return JsonResponse(response)
+        username = data['username']
+        password = data['password']
+            #user = authenticate(request, username=usr_name, password=passwd)
+        if username and password:
+            result = login_validate(request, username, password, ParkingLot)
+            if result == 0:
+                response['status'] = '11'
+            else:
+                response['status'] = '00'
+        else:
+            response['status'] = '00'
     else:
-        selected_choice.votes += 1
-        selected_choice.save()
-        return HttpResponseRedirect(reverse('registration:results', args=(question.id,)))
+        response['status'] = '10'
+    return JsonResponse(response)
 
+@csrf_exempt
+def changepassword_operator(request):
+    return
 
-"""
-#@login_required
-def my_protected_view(request):
-    #A view that can only be accessed by logged-in users
-    return render(request, 'protected.html', {"current_user": request.user})
-    """
-    
