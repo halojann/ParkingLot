@@ -22,6 +22,8 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+
+
 public class SignupFragment extends Fragment implements OnClickListener
 {
     TextView acc,psw,conpsw,email,phone;
@@ -31,15 +33,16 @@ public class SignupFragment extends Fragment implements OnClickListener
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.signup_fragment, container, false);
-
-
-
         acc = (TextView) view.findViewById(R.id.editText1);
         psw = (TextView) view.findViewById(R.id.editText2);
+        conpsw = (TextView) view.findViewById(R.id.editText3);
+        email = (TextView) view.findViewById(R.id.editText4);
+        phone = (TextView) view.findViewById(R.id.editText5);
         button_signup = (Button) view.findViewById(R.id.button_signup);
         button_login = (Button) view.findViewById(R.id.button_login);
         button_signup.setOnClickListener(this);
         button_login.setOnClickListener(this);
+        return view ;
     }
 
     @Override
@@ -52,6 +55,9 @@ public class SignupFragment extends Fragment implements OnClickListener
                 try {
                     send.put("account",acc.getText().toString()) ;
                     send.put("password",psw.getText().toString());
+                    send.put("conform password",conpsw.getText().toString());
+                    send.put("email",email.getText().toString());
+                    send.put("phone",phone.getText().toString());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -59,10 +65,10 @@ public class SignupFragment extends Fragment implements OnClickListener
                 httpProcess.execute();
                 break;
             case R.id.button_signup:
-                SignupFragment fTwo = new SignupFragment();
+                LoginFragment fOne = new LoginFragment();
                 FragmentManager fm = getFragmentManager();
                 FragmentTransaction tx = fm.beginTransaction();
-                tx.replace(R.id.id_content, fTwo, "TWO");
+                tx.replace(R.id.content, fOne, "ONE");
                 tx.addToBackStack(null);
                 tx.commit();
                 break;
@@ -120,18 +126,20 @@ public class SignupFragment extends Fragment implements OnClickListener
             try {
                 out = new JSONObject(result);
                 if(out.getString("status").equals("invalid")){
-                    Toast.makeText(com.example.user.parkinglot.LoginFragment.this,"login failed, please check the input or sign up",Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(),"Sign up failed, please check the input or Log in",Toast.LENGTH_LONG).show();
                 }
                 if(out.getString("status").equals("valid")){
-                    Intent gotomap = new Intent(com.example.user.parkinglot.LoginFragment.this,com.example.user.parkinglot.MapsActivity.class);
+                    Intent gotomap = new Intent(getActivity(),com.example.user.parkinglot.MapsActivity.class);
                     gotomap.putExtra("username",acc.getText().toString());
                     gotomap.putExtra("password",psw.getText().toString());
+                    gotomap.putExtra("confirm password",conpsw.getText().toString());
+                    gotomap.putExtra("email",email.getText().toString());
+                    gotomap.putExtra("phone",phone.getText().toString());
                     startActivity(gotomap);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
 
         }
 
