@@ -1,7 +1,9 @@
 package com.example.user.parkinglot;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,6 +24,8 @@ abstract class Login extends Activity implements View.OnClickListener{
 
     TextView acc,psw;
     Button button_login,button_signup;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

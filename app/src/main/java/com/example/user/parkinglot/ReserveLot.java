@@ -1,9 +1,12 @@
 package com.example.user.parkinglot;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -22,6 +25,9 @@ import java.net.URL;
 
 public class ReserveLot extends Activity {
 
+    SharedPreferences settings;
+    String username, lotname;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,11 +43,13 @@ public class ReserveLot extends Activity {
         e_mail = (TextView) findViewById(R.id.textView19);
         ph = (TextView) findViewById(R.id.textView25);
 
-        final String lotname = MapsActivity.lot_name;
-        final String username = " ";//todo get username from sharedpreferences
+        lotname = MapsActivity.lot_name;
         final String server_url = "http://10.109.106.250:8000/accounts/reserve/";
 
-        String vacancies = "vacancies", rate = "rate", openfrom = "opentime", closesat = "closetime", email = "email", phone = "phone";
+        settings = getSharedPreferences("account", Context.MODE_PRIVATE);
+        username = settings.getString("name", "");
+
+        String vacancies = "vacancies", rate = "rate", openfrom = "opentime", closesat = "closetime", email = "email", phone = "phone", status = "";
         Intent intent = getIntent();
 
         String response = intent.getStringExtra("response");
@@ -49,6 +57,7 @@ public class ReserveLot extends Activity {
         try {
             json = new JSONObject(response);
 
+            status = json.getString("status");
             vacancies = json.getString("remaining_number");
             rate = json.getString("price_info");
             openfrom = json.getString("start_time");
@@ -58,7 +67,7 @@ public class ReserveLot extends Activity {
 
         } catch (JSONException e) {
             e.printStackTrace();
-            Log.d("Invalid json", "crash");
+            Log.d("Invalid json", status);
         }
 
         lot_name.setText(lotname);
@@ -69,11 +78,9 @@ public class ReserveLot extends Activity {
         e_mail.setText(email);
         ph.setText(phone);
 
-        EditText startuser = (EditText) findViewById(R.id.editText6);
-        EditText enduser = (EditText) findViewById(R.id.editText7);
-
-        final String starttime = startuser.getText().toString();
-        final String endtime = enduser.getText().toString();
+        EditText time_duration = (EditText) findViewById(R.id.editText7);
+        time_duration.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        final String duration = time_duration.getText().toString();
 
         Button button = (Button) findViewById(R.id.button4);
         button.setOnClickListener(new View.OnClickListener() {
@@ -82,8 +89,7 @@ public class ReserveLot extends Activity {
                 JSONObject json = new JSONObject();
                 try {
                     json.put("parkinglot_name", lotname);
-                    json.put("start", starttime);
-                    json.put("end", endtime);
+                    json.put("duration", duration);
                     json.put("username", username);
                 } catch (JSONException j) {
                     j.printStackTrace();
@@ -147,8 +153,34 @@ public class ReserveLot extends Activity {
 
             Toast.makeText(getApplicationContext(), "Reservation completed", Toast.LENGTH_LONG).show();
 
-            //todo store voucher from response in sharedpreferences
-            //todo launch pending arrival activity
+            String token = "", start = "", end = "", transaction = "", status = "";
+
+            try {
+                JSONObject json = new JSONObject(result);
+                status = json.getString("status");
+                token = json.getString("token");
+                start = json.getString("start");
+                end = json.getString("end");
+                transaction = json.getString("transaction");
+
+            } catch (JSONException j) {
+                j.printStackTrace();
+                Log.d("json status ", status);
+            }
+
+            SharedPreferences.Editor editor = getSharedPreferences("account", Context.MODE_PRIVATE).edit();
+            editor.putString("token", token);
+            editor.apply();
+
+
+            Intent intent = new Intent(com.example.user.parkinglot.ReserveLot.this, com.example.user.parkinglot.Beam.class);
+            intent.putExtra("username", username);
+            intent.putExtra("parkinglot", lotname);
+            intent.putExtra("start", start);
+            intent.putExtra("end", end);
+            intent.putExtra("transaction", transaction);
+            intent.putExtra("signature", token);
+            startActivity(intent);
         }
     }
 }

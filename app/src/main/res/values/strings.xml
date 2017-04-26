@@ -16,7 +16,6 @@
     <string name="Textview">. . . </string>
     <string name="confirm">Confirm</string>
 
-    <string name="pick_entry">Pick Entry Time</string>
-    <string name="pick_exit">Pick Exit Time</string>
+    <string name="pick_duration">Pick Duration (mins)</string>
 
 </resources>
