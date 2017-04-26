@@ -16,7 +16,7 @@ public class Start extends Activity{
 
         FragmentManager fm = getFragmentManager();
         FragmentTransaction tx = fm.beginTransaction();
-        tx.add(R.id.id_content, new FragmentOne(),"ONE");
+        tx.add(R.id.id_content, new LoginFragment(),"ONE");
         tx.commit();
     }
 }
