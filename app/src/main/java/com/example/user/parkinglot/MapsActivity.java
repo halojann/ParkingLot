@@ -56,6 +56,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     int PLACE_PICKER_REQUEST = 1;//request id for manual place selection
     private static String radius = "1000";
 
+    public static String lot_name;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -206,14 +208,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         Log.d("Marker clicked :", lotname + "@" + lat + "," + lon);
 
+        lot_name = lotname;
+
         //send these to server
-        String server_url = "http://10.109.106.250:8000/accounts/hello/";
+        String server_url = "http://10.109.106.250:8000/accounts/information/";
         JSONObject json = new JSONObject();
 
         try {
-            json.put("LotName", lotname);
-            json.put("lat", lat);
-            json.put("lon", lon);
+            json.put("parkinglot_name", lotname);
+            json.put("latitude", lat);
+            json.put("longitude", lon);
         } catch (JSONException j) {
             j.printStackTrace();
         }
@@ -330,9 +334,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 httpURLConnection = (HttpURLConnection) new URL(params[0]).openConnection();
                 httpURLConnection.setRequestMethod("POST");
                 httpURLConnection.setDoOutput(true);
-
-                //httpURLConnection.setRequestProperty("User-Agent","Mozilla/5.0 ( compatible ) ");
-                //httpURLConnection.setRequestProperty("Accept","*/*");
 
                 //POST JSON.tostring()
                 DataOutputStream wr = new DataOutputStream(httpURLConnection.getOutputStream());

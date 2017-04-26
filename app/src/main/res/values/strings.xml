@@ -3,4 +3,20 @@
     <string name="title_activity_maps">Map</string>
     <string name="nearby">Nearby Lots</string>
     <string name="title_activity_reserve_lot">ReserveLot</string>
+
+    <string name="lotname">Lot Name</string>
+    <string name="vacancies">Vacancies</string>
+    <string name="rateperhour">Rate per hour</string>
+    <string name="openfrom">Open from</string>
+    <string name="closesat">Closes at</string>
+    <string name="email">Email</string>
+    <string name="phone">Phone</string>
+
+    <string name="confirmreservation">Confirm Reservation</string>
+    <string name="Textview">. . . </string>
+    <string name="confirm">Confirm</string>
+
+    <string name="pick_entry">Pick Entry Time</string>
+    <string name="pick_exit">Pick Exit Time</string>
+
 </resources>

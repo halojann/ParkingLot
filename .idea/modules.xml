@@ -3,10 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/ParkingLot.iml" filepath="$PROJECT_DIR$/ParkingLot.iml" />
-      <module fileurl="file://$PROJECT_DIR$/ParkingLot.iml" filepath="$PROJECT_DIR$/ParkingLot.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/operator/operator.iml" filepath="$PROJECT_DIR$/operator/operator.iml" />
       <module fileurl="file://$PROJECT_DIR$/operator/operator.iml" filepath="$PROJECT_DIR$/operator/operator.iml" />
       <module fileurl="file://$PROJECT_DIR$/ourproject.iml" filepath="$PROJECT_DIR$/ourproject.iml" />
     </modules>
