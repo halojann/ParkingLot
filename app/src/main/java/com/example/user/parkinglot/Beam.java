@@ -34,7 +34,7 @@ public class Beam extends Activity implements NfcAdapter.CreateNdefMessageCallba
         textView1=(TextView)findViewById(R.id.textView) ;
         textView2=(TextView)findViewById(R.id.textView2) ;
         textView3=(TextView)findViewById(R.id.textView3) ;
-        button = (Button)findViewById(R.id.button);
+        button = (Button)findViewById(R.id.button4);
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
         if (mNfcAdapter == null) {
             Toast.makeText(this, "NFC is not available", Toast.LENGTH_LONG).show();
@@ -70,8 +70,9 @@ public class Beam extends Activity implements NfcAdapter.CreateNdefMessageCallba
             info = new JSONObject();
             info.put("username",intent.getStringExtra("username"));
             info.put("parkinglot",intent.getStringExtra("parkinglot"));
-            info.put("start",intent.getLongExtra("start",0));
-            info.put("end",intent.getLongExtra("end",0));
+            info.put("start",intent.getStringExtra("start"));
+            info.put("end",intent.getStringExtra("end"));
+            info.put("transaction",intent.getStringExtra("transaction"));
             info.put("signature",intent.getStringExtra("signature"));
 
         } catch (JSONException e) {

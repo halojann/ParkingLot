@@ -20,7 +20,7 @@ import java.net.URL;
 public class Login extends Activity {
 
     TextView acc,psw;
-    Button button3,button2;
+    Button button,button2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,9 +29,9 @@ public class Login extends Activity {
 
         acc = (TextView) findViewById(R.id.editText);
         psw = (TextView) findViewById(R.id.editText2);
-        button3 = (Button) findViewById(R.id.button3);
+        button = (Button) findViewById(R.id.button);
         button2 = (Button) findViewById(R.id.button2);
-        button2.setOnClickListener(new View.OnClickListener(){
+        button.setOnClickListener(new View.OnClickListener(){
 
             @Override
             public void onClick(View v) {
@@ -46,7 +46,7 @@ public class Login extends Activity {
                 httpProcess.execute();
             }
         });
-        button3.setOnClickListener(new View.OnClickListener(){
+        button2.setOnClickListener(new View.OnClickListener(){
 
             @Override
             public void onClick(View v) {
