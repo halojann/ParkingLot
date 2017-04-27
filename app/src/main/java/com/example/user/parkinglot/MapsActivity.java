@@ -211,7 +211,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         lot_name = lotname;
 
         //send these to server
-        String server_url = "http://10.109.106.250:8000/accounts/information/";
+        String server_url = "http://ssh.missingrain.live:8000/accounts/information/";
         JSONObject json = new JSONObject();
 
         try {

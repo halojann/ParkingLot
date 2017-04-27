@@ -1,16 +1,10 @@
-from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
-from django.contrib.auth.decorators import login_required
-#from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
+from django.http import JsonResponse
 from django.contrib import auth
-from django.shortcuts import render, get_object_or_404, render_to_response
-from django.urls import reverse
-from django.views import generic
-from django.utils import timezone
-from django import forms
-from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 import json
-from models import User, ParkingLot
+from datetime import datetime
+import time
+from .models import User, ParkingLot
 
 # Create your views here.
 @csrf_exempt
@@ -94,7 +88,7 @@ def mylogin_user(request):
     response = {}
     if request.method == 'POST':
         try:
-            data = json.loads(request)
+            data = json.loads(request.body)
         except:
             response['status'] = '10'
             return JsonResponse(response)
@@ -136,27 +130,40 @@ def register_operator(request):
         lotname = data['lotname']
         address = data['address']
         total_number = data['total_number']
-        remaining_dict = dict(zip([str(each) for each in range(24)], list(total_number)*24))
-        remaining_number = json.loads(remaining_dict)
+        remaining_dict = dict(zip([str(each) for each in range(24)], [total_number]*24))
+        remaining_number = json.dumps(remaining_dict)
         price_info = data['price_info']
-        start_time = data['start_time']
-        close_time = data['close_time']
+        start_time_str = data['start_time']
+        close_time_str = data['close_time']
         email = data['email']
         phone = data['phone']
-        if username and lotname and address and total_number and remaining_number and price_info and start_time and close_time and email and phone and password and password2:
-            if not ParkingLot.objects.all().filter(username=username):
+
+        if username and lotname and address and total_number and remaining_number and price_info and start_time_str and close_time_str and email and phone and password and password2:
+            if (not ParkingLot.objects.all().filter(username=username)) and (not ParkingLot.objects.all().filter(lotname=lotname)):
                 if pwd_validate(password, password2):
-                    parking_lot = ParkingLot.objects.create(username=username, password=password, lotname=lotname, address=address, 
-                                                     total_number=total_number, remaining_number=remaining_number, price_info=price_info, 
-                                                     start_time=start_time, close_time=close_time, email=email, phone=phone)
-                    parking_lot.save()
+                    _a = time.strptime(start_time_str, '%H:%M')
+                    _b = time.strptime(close_time_str, '%H:%M')
+                    start_time = datetime(*_a[:5])
+                    close_time = datetime(*_b[:5])
+
+                    
                     #login_validate(request, username, password)
+                    try:
+                        f = open('registration/master-public.pem')
+                        response['public_key'] = f.read()
+                    except:
+                        response['status'] = '101' #file I/O error, fail to issue public key
+                        return JsonResponse(response)
+                    parking_lot = ParkingLot.objects.create(username=username, password=password, lotname=lotname, address=address, 
+                                 total_number=total_number, remaining_number=remaining_number, price_info=price_info, 
+                                 start_time=start_time, close_time=close_time, email=email, phone=phone)
+                    parking_lot.save()
                     response['status'] = '11'
                 else:
-                    response['status'] = '01'
+                    response['status'] = '011' # password doesn't match
             else:
                 #The username has existed, please change your username
-                response['status'] = '00'
+                response['status'] = '00' # username exists
         else:
             # information missing
             response['status'] = '01'
@@ -170,7 +177,7 @@ def mylogin_operator(request):
     response = {}
     if request.method == 'POST':
         try:
-            data = json.loads(request)
+            data = json.loads(request.body)
         except:
             response['status'] = '10'
             return JsonResponse(response)
@@ -182,11 +189,9 @@ def mylogin_operator(request):
             if result == 0:
                 response['status'] = '11'
             else:
-                response['status'] = '00'
+                response['status'] = '001'
         else:
             response['status'] = '00'
-    else:
-        response['status'] = '10'
     return JsonResponse(response)
 
 @csrf_exempt
