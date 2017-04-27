@@ -49,7 +49,7 @@ public class LoginFragment extends Fragment implements OnClickListener
         switch (v.getId()){
 
             case R.id.button_login:
-                JSONObject send = null;
+                JSONObject send = new JSONObject();
                 try {
                     send.put("account",acc.getText().toString()) ;
                     send.put("password",psw.getText().toString());

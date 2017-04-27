@@ -161,6 +161,7 @@ public class login extends Activity {
                     editor.putString("password",password_input.getText().toString());
                     editor.putBoolean("isLogin",true);
                     editor.commit();
+
                     //startActivity(gotomap);
                 }
             } catch (JSONException e) {

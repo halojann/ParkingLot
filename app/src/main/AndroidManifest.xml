@@ -43,7 +43,7 @@
                     android:scheme="vnd.android.nfc" />
             </intent-filter>
         </activity>
-        <activity android:name=".Login">
+        <activity android:name=".Start">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

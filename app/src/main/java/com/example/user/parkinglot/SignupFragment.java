@@ -51,7 +51,15 @@ public class SignupFragment extends Fragment implements OnClickListener
         switch (v.getId()){
 
             case R.id.button_login:
-                JSONObject send = null;
+                LoginFragment fOne = new LoginFragment();
+                FragmentManager fm = getFragmentManager();
+                FragmentTransaction tx = fm.beginTransaction();
+                tx.replace(R.id.id_content, fOne, "ONE");
+                tx.addToBackStack(null);
+                tx.commit();
+                break;
+            case R.id.button_signup:
+                JSONObject send = new JSONObject();
                 try {
                     send.put("account",acc.getText().toString()) ;
                     send.put("password",psw.getText().toString());
@@ -63,14 +71,6 @@ public class SignupFragment extends Fragment implements OnClickListener
                 }
                 httpProcess.setcontent("http://10.109.106.250:8000/accounts/hello/",send);
                 httpProcess.execute();
-                break;
-            case R.id.button_signup:
-                LoginFragment fOne = new LoginFragment();
-                FragmentManager fm = getFragmentManager();
-                FragmentTransaction tx = fm.beginTransaction();
-                tx.replace(R.id.content, fOne, "ONE");
-                tx.addToBackStack(null);
-                tx.commit();
                 break;
 
         }

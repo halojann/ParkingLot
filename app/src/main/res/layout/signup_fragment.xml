@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.example.user.parkinglot.SignupFragment">
 
     <LinearLayout
@@ -65,13 +64,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Login"/>
-
-        <FrameLayout
-            android:id="@+id/content"
-            android:background="#EEE"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
 
     </LinearLayout>
 
