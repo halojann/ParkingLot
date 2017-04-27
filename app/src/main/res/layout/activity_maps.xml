@@ -17,7 +17,8 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="0.99"
-        tools:context="com.example.user.parkinglot.MapsActivity" />
+        tools:context="com.example.user.parkinglot.MapsActivity"
+        tools:layout="@layout/activity_maps" />
 
 </LinearLayout>
 
