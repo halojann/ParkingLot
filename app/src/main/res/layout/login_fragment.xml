@@ -12,8 +12,15 @@
         android:paddingTop="56dp"
         android:paddingLeft="24dp"
         android:paddingRight="24dp"
-        tools:layout_editor_absoluteY="0dp">
+        tools:layout_editor_absoluteY="0dp"
+        android:weightSum="1">
 
+        <ImageView android:src="@drawable/logos"
+            android:layout_width="323dp"
+            android:layout_height="72dp"
+            android:layout_marginBottom="24dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="0.12" />
 
         <EditText
             android:id="@+id/editText1"
