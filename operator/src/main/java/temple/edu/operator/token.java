@@ -27,7 +27,7 @@ import java.security.SignatureException;
 import java.security.spec.X509EncodedKeySpec;
 
 public class token extends Activity {
-    String str, server_url = "http://10.109.106.250:8000/accounts/arrive/";
+    String str, server_url = "http://ssh.missingrain.live:8000/accounts/arrive/";
     JSONObject token = null;
 
     @Override

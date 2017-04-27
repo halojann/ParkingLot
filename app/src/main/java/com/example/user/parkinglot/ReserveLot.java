@@ -44,7 +44,7 @@ public class ReserveLot extends Activity {
         ph = (TextView) findViewById(R.id.textView25);
 
         lotname = MapsActivity.lot_name;
-        final String server_url = "http://10.109.106.250:8000/accounts/reserve/";
+        final String server_url = "http://ssh.missingrain.live:8000/accounts/reserve/";
 
         settings = getSharedPreferences("account", Context.MODE_PRIVATE);
         username = settings.getString("name", "");
