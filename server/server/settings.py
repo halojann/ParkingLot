@@ -26,9 +26,9 @@ SECRET_KEY = 'r$n(g#pclowdx!ao#*7*9if2c$gkh)4q^lbb!c*i%02rua5m+a'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-APPEND_SLASH = False
+APPEND_SLASH = True
 
-ALLOWED_HOSTS = ['10.109.106.250', 'localhost']
+ALLOWED_HOSTS = ['10.109.106.250', 'localhost', 'ssh.missingrain.live', '127.0.0.1']
 
 
 # Application definition
@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'lot_service.apps.LotServiceConfig',
     'user_service.apps.UserServiceConfig',
     'registration.apps.RegistrationConfig',
+    'daemon.apps.DaemonConfig',
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -82,11 +84,11 @@ WSGI_APPLICATION = 'server.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'parking',
+        'NAME': 'parking_server',
         'USER': 'haotian',
         'PASSWORD': 'haotian',
         'HOST': 'ssh.missingrain.live',
-        'DATABASE': 'parking_server',
+        #'DATABASE': 'parking_server',
     }
 }
 
