@@ -1,16 +1,14 @@
 package com.example.user.parkinglot;
 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,7 +27,6 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -211,13 +208,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         lot_name = lotname;
 
         //send these to server
-        String server_url = "http://ssh.missingrain.live:8000/accounts/information/";
+        String server_url = "http://ssh.missingrain.live:8001/userservice/information/";
         JSONObject json = new JSONObject();
 
         try {
             json.put("parkinglot_name", lotname);
-            json.put("latitude", lat);
-            json.put("longitude", lon);
+//            json.put("latitude", lat);
+//            json.put("longitude", lon);
         } catch (JSONException j) {
             j.printStackTrace();
         }
@@ -337,7 +334,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 //POST JSON.tostring()
                 DataOutputStream wr = new DataOutputStream(httpURLConnection.getOutputStream());
-                wr.writeBytes("PostData=" + params[1]);
+                wr.writeBytes(params[1]);
                 wr.flush();
                 wr.close();
 
@@ -367,24 +364,36 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         @Override
         protected void onPostExecute(final String result) {
             super.onPostExecute(result);
-            Log.d("json sent ; response: ", result);
+            try {
+                JSONObject Result = new JSONObject(result);
+                if(Result.getString("status").equals("11")){
+                    Intent reserve = new Intent(com.example.user.parkinglot.MapsActivity.this, com.example.user.parkinglot.ReserveLot.class);
+                    reserve.putExtra("response", result);
+                    startActivity(reserve);
+                }
+                if(Result.getString("status").equals("00")){
+                    Toast.makeText(getApplicationContext(), "Not available", Toast.LENGTH_SHORT).show();
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
 
-            new AlertDialog.Builder(getApplicationContext())
-                    .setTitle("Confirm selection")
-                    .setMessage("Pick this lot?")
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 
-                        public void onClick(DialogInterface dialog, int whichButton) {
-                            Toast.makeText(getApplicationContext(), "please wait", Toast.LENGTH_SHORT).show();
-                            //Launch Reserve lot activity
 
-                            Intent reserve = new Intent(com.example.user.parkinglot.MapsActivity.this, com.example.user.parkinglot.ReserveLot.class);
-                            reserve.putExtra("response", result);
-                            startActivity(reserve);
-                        }
-                    })
-                    .setNegativeButton(android.R.string.no, null).show();
+//            new AlertDialog.Builder(getApplicationContext())
+//                    .setTitle("Confirm selection")
+//                    .setMessage("Pick this lot?")
+//                    .setIcon(android.R.drawable.ic_dialog_alert)
+//                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+//
+//                        public void onClick(DialogInterface dialog, int whichButton) {
+//
+//                            //Launch Reserve lot activity
+//
+//
+//                        }
+//                    })
+//                    .setNegativeButton(android.R.string.no, null).show();
         }
     }
 }

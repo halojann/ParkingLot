@@ -3,7 +3,9 @@ package com.example.user.parkinglot;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,14 +26,16 @@ import java.net.URL;
 
 public class LoginFragment extends Fragment implements OnClickListener
 {
+    SharedPreferences settings;
+
     TextView acc,psw;
     private Button button_login,button_signup;
-    final LoginFragment.HttpProcess httpProcess = new LoginFragment.HttpProcess();
+
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.login_fragment, container, false);
-
+        settings = getActivity().getSharedPreferences("account", Context.MODE_PRIVATE);
 
 
         acc = (TextView) view.findViewById(R.id.editText1);
@@ -40,6 +44,10 @@ public class LoginFragment extends Fragment implements OnClickListener
         button_login = (Button) view.findViewById(R.id.button_login);
         button_signup.setOnClickListener(this);
         button_login.setOnClickListener(this);
+        if(settings!=null){
+            acc.setText(settings.getString("username",""));
+            psw.setText(settings.getString("password",""));
+        }
         return view ;
     }
 
@@ -51,12 +59,13 @@ public class LoginFragment extends Fragment implements OnClickListener
             case R.id.button_login:
                 JSONObject send = new JSONObject();
                 try {
-                    send.put("account",acc.getText().toString()) ;
+                    send.put("username",acc.getText().toString()) ;
                     send.put("password",psw.getText().toString());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                httpProcess.setcontent("http://10.109.106.250:8000/accounts/hello/",send);
+                LoginFragment.HttpProcess httpProcess = new LoginFragment.HttpProcess();
+                httpProcess.setcontent("http://ssh.missingrain.live:8001/registration/login_user/",send);
                 httpProcess.execute();
                 break;
             case R.id.button_signup:
@@ -71,12 +80,12 @@ public class LoginFragment extends Fragment implements OnClickListener
         }
     }
 
+
     public class HttpProcess extends AsyncTask<String, Void, String> {
         String destination =null;
         JSONObject content = null;
         @Override
         protected String doInBackground(String... params) {
-            JSONObject account = new JSONObject(),send=new JSONObject();
 
             String result="";
 
@@ -89,22 +98,26 @@ public class LoginFragment extends Fragment implements OnClickListener
                 connection.setDoOutput(true);
                 connection.setDoInput(true);
                 connection.setUseCaches(false);
+
                 //connection.setChunkedStreamingMode(0);
                 connection.setRequestMethod("POST");
-                account.put("username","Chenglong Fu");
-                account.put("password","fcl199303");
-                connection.getOutputStream().write(String.valueOf(account).getBytes());//把数据以流的方式写给服务器。
+//                account.put("username","Chenglong Fu");
+//                account.put("password","fcl199303");
+                connection.getOutputStream().write(String.valueOf(content).getBytes());//把数据以流的方式写给服务器。
                 connection.getOutputStream().close();
                 int code = connection.getResponseCode();
                 Log.i("code==" ,String.valueOf(code));
                 Log.i("status code: ",String.valueOf(connection.getResponseCode()));
                 InputStream in = connection.getInputStream();
+
                 //Read Result
                 int val;
                 while ((val=in.read()) > 0) {
                     result += (char) val;
                 }
+                Log.d("result",result);
                 in.close();
+
 
             } catch(Exception e) {
                 e.printStackTrace();
@@ -120,11 +133,17 @@ public class LoginFragment extends Fragment implements OnClickListener
             JSONObject out = null;
             try {
                 out = new JSONObject(result);
-                if(out.getString("status").equals("invalid")){
+                if(out.getString("status").equals("00")){
                     Toast.makeText(getActivity(),"login failed, please check the input or sign up",Toast.LENGTH_LONG).show();
                 }
-                if(out.getString("status").equals("valid")){
+
+                if(out.getString("status").equals("11")){
                     Intent gotomap = new Intent(getActivity(),com.example.user.parkinglot.MapsActivity.class);
+                    SharedPreferences.Editor editor = settings.edit();
+                    editor.putString("username",acc.getText().toString());
+                    editor.putString("password",psw.getText().toString());
+                    editor.commit();
+
                     gotomap.putExtra("username",acc.getText().toString());
                     gotomap.putExtra("password",psw.getText().toString());
                     startActivity(gotomap);

@@ -21,5 +21,7 @@ public class Start extends Activity{
         FragmentTransaction tx = fm.beginTransaction();
         tx.add(R.id.id_content, new LoginFragment(),"ONE");
         tx.commit();
+
+
     }
 }

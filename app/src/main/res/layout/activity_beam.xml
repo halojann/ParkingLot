@@ -32,10 +32,28 @@
             android:id="@+id/button4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
+            android:onClick="sendcoming"
+            android:text="comming"
             android:layout_centerVertical="true"
-            android:onClick="send"
-            android:text="send" />
+            android:layout_alignParentStart="true" />
+
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="sendleaving"
+            android:text="leaving"
+            android:layout_alignBaseline="@+id/button4"
+            android:layout_alignBottom="@+id/button4"
+            android:layout_toEndOf="@+id/button4" />
+
+        <TextView
+            android:id="@+id/textView10"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="28dp"
+            android:layout_toEndOf="@+id/button2" />
 
     </RelativeLayout>
 

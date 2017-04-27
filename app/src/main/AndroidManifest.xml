@@ -20,10 +20,9 @@
 
         <activity
             android:name=".MapsActivity"
-            android:label="@string/title_activity_maps">
-
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.MAIN" /> -->
+            android:label="@string/title_activity_maps"
+            android:exported="true">
+            <!-- <intent-filter> --><!-- <action android:name="android.intent.action.MAIN" /> -->
 
 
             <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
@@ -36,6 +35,7 @@
                 <action android:name="android.nfc.action.NDEF_DISCOVERED" />
 
                 <category android:name="android.intent.category.DEFAULT" />
+
 
                 <data
                     android:host="ext"

@@ -17,9 +17,11 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.DataOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -27,7 +29,9 @@ public class ReserveLot extends Activity {
 
     SharedPreferences settings;
     String username, lotname;
-
+    String duration;
+    final String server_url="http://ssh.missingrain.live:8001/userservice/reserve/";
+    EditText time_duration;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,11 +48,9 @@ public class ReserveLot extends Activity {
         ph = (TextView) findViewById(R.id.textView25);
 
         lotname = MapsActivity.lot_name;
-        final String server_url = "http://ssh.missingrain.live:8000/accounts/reserve/";
 
         settings = getSharedPreferences("account", Context.MODE_PRIVATE);
-        username = settings.getString("name", "");
-
+        username = settings.getString("username", "");
         String vacancies = "vacancies", rate = "rate", openfrom = "opentime", closesat = "closetime", email = "email", phone = "phone", status = "";
         Intent intent = getIntent();
 
@@ -78,14 +80,15 @@ public class ReserveLot extends Activity {
         e_mail.setText(email);
         ph.setText(phone);
 
-        EditText time_duration = (EditText) findViewById(R.id.editText7);
+        time_duration = (EditText) findViewById(R.id.editText7);
         time_duration.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
-        final String duration = time_duration.getText().toString();
+
 
         Button button = (Button) findViewById(R.id.button4);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                duration = time_duration.getText().toString();
                 JSONObject json = new JSONObject();
                 try {
                     json.put("parkinglot_name", lotname);
@@ -95,11 +98,22 @@ public class ReserveLot extends Activity {
                     j.printStackTrace();
                     Log.d("json exception: ", "send reservation details to server");
                 }
-
+                Log.d("datatosend",json.toString());
                 new SendtoServer().execute(server_url, json.toString());
 
             }
         });
+    }
+
+    void sendIntent(String username,String parkinglogname, String start, String end, String token, int transaction){
+        Intent intent = new Intent(com.example.user.parkinglot.ReserveLot.this, com.example.user.parkinglot.Beam.class);
+        intent.putExtra("username", username);
+        intent.putExtra("parkinglotname", parkinglogname);
+        intent.putExtra("start", start);
+        intent.putExtra("end", end);
+        intent.putExtra("transaction_no", transaction);
+        intent.putExtra("token", token);
+        startActivity(intent);
     }
 
     private class SendtoServer extends AsyncTask<String, Void, String> {
@@ -111,17 +125,27 @@ public class ReserveLot extends Activity {
             HttpURLConnection httpURLConnection = null;
             try {
 
+
                 //connect to url
                 httpURLConnection = (HttpURLConnection) new URL(params[0]).openConnection();
                 httpURLConnection.setRequestMethod("POST");
                 httpURLConnection.setDoOutput(true);
 
 
+                httpURLConnection.setConnectTimeout(30000);
+                httpURLConnection.setRequestProperty("Content-Type", "application/json");
+                httpURLConnection.setDoInput(true);
+
+                //connection.setChunkedStreamingMode(0);
+//                account.put("username","Chenglong Fu");
+//                account.put("password","fcl199303");
+                httpURLConnection.getOutputStream().write(params[1].getBytes());//把数据以流的方式写给服务器。
+                httpURLConnection.getOutputStream().close();
                 //POST JSON.tostring()
-                DataOutputStream wr = new DataOutputStream(httpURLConnection.getOutputStream());
-                wr.writeBytes("PostData=" + params[1]);
-                wr.flush();
-                wr.close();
+//                DataOutputStream wr = new DataOutputStream(httpURLConnection.getOutputStream());
+//                wr.writeBytes(params[1]);
+//                wr.flush();
+//                wr.close();
 
                 //get response
                 Log.d("Response code: ", (String.valueOf(httpURLConnection.getResponseCode())));
@@ -150,8 +174,39 @@ public class ReserveLot extends Activity {
         protected void onPostExecute(final String result) {
             super.onPostExecute(result);
             Log.d("reservation response: ", result);
+            JSONObject jsonObject=null;
+            try {
+                jsonObject = new JSONObject(result);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
 
-            Toast.makeText(getApplicationContext(), "Reservation completed", Toast.LENGTH_LONG).show();
+
+            if((jsonObject!=null)){
+                try {
+                    if(jsonObject.getString("status").equals("11")){
+                        Toast.makeText(getApplicationContext(), "Reservation completed", Toast.LENGTH_LONG).show();
+                        try {
+                            OutputStream outputStream = openFileOutput("token", Context.MODE_PRIVATE);
+                            outputStream.write(jsonObject.getString("token").getBytes());
+                            outputStream.close();
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        sendIntent(username,lotname, jsonObject.getString("start"),jsonObject.getString("end"),jsonObject.getString("token"),jsonObject.getInt("transaction_no"));
+                        //Log.d("transaction number",String.valueOf(jsonObject.getInt("transaction_no")));
+                    }
+                    else if(jsonObject.getString("status").equals("00")){
+                        Toast.makeText(getApplicationContext(), "No room", Toast.LENGTH_LONG).show();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+
 
             String token = "", start = "", end = "", transaction = "", status = "";
 
@@ -168,19 +223,10 @@ public class ReserveLot extends Activity {
                 Log.d("json status ", status);
             }
 
-            SharedPreferences.Editor editor = getSharedPreferences("account", Context.MODE_PRIVATE).edit();
-            editor.putString("token", token);
-            editor.apply();
 
 
-            Intent intent = new Intent(com.example.user.parkinglot.ReserveLot.this, com.example.user.parkinglot.Beam.class);
-            intent.putExtra("username", username);
-            intent.putExtra("parkinglot", lotname);
-            intent.putExtra("start", start);
-            intent.putExtra("end", end);
-            intent.putExtra("transaction", transaction);
-            intent.putExtra("signature", token);
-            startActivity(intent);
+
+
         }
     }
 }

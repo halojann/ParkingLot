@@ -1,0 +1,161 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="temple.edu.operator.SignupFragment">
+
+    <LinearLayout
+        android:layout_width="373dp"
+        android:layout_height="499dp"
+        android:orientation="vertical"
+        tools:layout_editor_absoluteY="8dp"
+        tools:layout_editor_absoluteX="8dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/suname"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:hint="username"
+                android:inputType="textPersonName"
+                android:text="chenglong"
+                tools:layout_editor_absoluteX="85dp"
+                tools:layout_editor_absoluteY="51dp" />
+
+            <EditText
+                android:id="@+id/spasswd"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:hint="password"
+                android:inputType="textPassword"
+                android:text="123456" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/semail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:hint="email"
+                android:inputType="textEmailSubject"
+                android:text="aaaaaa" />
+
+            <EditText
+                android:id="@+id/sconfirmpsw"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:hint="confirm password"
+                android:inputType="textPassword"
+                android:text="123456" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/sphone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:hint="phone"
+                android:inputType="textPhonetic"
+                android:text="123456" />
+
+            <EditText
+                android:id="@+id/price_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:hint="price"
+                android:inputType="textPersonName"
+                android:text="2" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/start_time"
+                android:layout_width="188dp"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="start time"
+                android:inputType="textPersonName"
+                android:text="12:00" />
+
+            <EditText
+                android:id="@+id/end_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:hint="end time"
+                android:inputType="textPersonName"
+                android:text="19:00" />
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="address"
+            android:inputType="textPersonName"
+            android:text="aaaa" />
+
+        <EditText
+            android:id="@+id/lotname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="parking lot name"
+            android:inputType="textPersonName"
+            android:text="fff" />
+
+        <EditText
+            android:id="@+id/totalnumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="total number"
+            android:inputType="textPersonName"
+            android:text="300" />
+
+        <Button
+        android:id="@+id/button_signup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Sign Up" />
+
+    <Button
+        android:id="@+id/button_login"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Login"/>
+
+    </LinearLayout>
+</FrameLayout>

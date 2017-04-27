@@ -1,4 +1,4 @@
-package com.example.user.parkinglot;
+package temple.edu.operator;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -24,23 +24,28 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 
-
 public class SignupFragment extends Fragment implements OnClickListener
 {
-    TextView acc,psw,conpsw,email,phone;
     SharedPreferences settings;
+    TextView acc,psw,conpsw,email,phone,lotname,address,total_number,price_info,start,end;
     private Button button_login,button_signup;
     final SignupFragment.HttpProcess httpProcess = new SignupFragment.HttpProcess();
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.signup_fragment, container, false);
-        settings = getActivity().getSharedPreferences("account", Context.MODE_PRIVATE);
-        acc = (TextView) view.findViewById(R.id.editText1);
-        psw = (TextView) view.findViewById(R.id.editText2);
-        conpsw = (TextView) view.findViewById(R.id.editText3);
-        email = (TextView) view.findViewById(R.id.editText4);
-        phone = (TextView) view.findViewById(R.id.editText5);
+        View view = inflater.inflate(R.layout.fragment_signup, container, false);
+        settings=getActivity().getSharedPreferences("account", Context.MODE_PRIVATE);
+        acc = (TextView) view.findViewById(R.id.suname);
+        psw = (TextView) view.findViewById(R.id.spasswd);
+        conpsw = (TextView) view.findViewById(R.id.sconfirmpsw);
+        email = (TextView) view.findViewById(R.id.semail);
+        phone = (TextView) view.findViewById(R.id.sphone);
+        lotname = (TextView) view.findViewById(R.id.lotname);
+        address = (TextView) view.findViewById(R.id.address);
+        total_number =(TextView)view.findViewById(R.id.totalnumber);
+        price_info = (TextView)view.findViewById(R.id.price_info);
+        start = (TextView)view.findViewById(R.id.start_time);
+        end=(TextView)view.findViewById(R.id.end_time);
         button_signup = (Button) view.findViewById(R.id.button_signup);
         button_login = (Button) view.findViewById(R.id.button_login);
         button_signup.setOnClickListener(this);
@@ -64,27 +69,36 @@ public class SignupFragment extends Fragment implements OnClickListener
             case R.id.button_signup:
                 JSONObject send = new JSONObject();
                 try {
+
                     send.put("username",acc.getText().toString()) ;
-                    send.put("email",email.getText().toString());
-                    send.put("phone",phone.getText().toString());
                     send.put("password",psw.getText().toString());
                     send.put("password2",conpsw.getText().toString());
+                    send.put("email",email.getText().toString());
+                    send.put("phone",phone.getText().toString());
+                    send.put("price_info",price_info.getText().toString());
+                    send.put("lotname",lotname.getText().toString());
+                    send.put("address",address.getText().toString());
+                    send.put("total_number",total_number.getText().toString());
+                    send.put("start_time",start.getText().toString());
+                    send.put("close_time",end.getText().toString());
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                httpProcess.setcontent("http://ssh.missingrain.live:8001/registration/register_user/",send);
+                httpProcess.setcontent("http://ssh.missingrain.live:8001/registration/register_operator/",send);
                 httpProcess.execute();
                 break;
 
         }
     }
 
+
+
     public class HttpProcess extends AsyncTask<String, Void, String> {
         String destination =null;
         JSONObject content = null;
         @Override
         protected String doInBackground(String... params) {
-            //JSONObject account = new JSONObject(),send=new JSONObject();
 
             String result="";
 
@@ -99,9 +113,8 @@ public class SignupFragment extends Fragment implements OnClickListener
                 connection.setUseCaches(false);
                 //connection.setChunkedStreamingMode(0);
                 connection.setRequestMethod("POST");
-//                account.put("username","Chenglong Fu");
-//                account.put("password","fcl199303");
-                connection.getOutputStream().write(String.valueOf(content).getBytes());//把数据以流的方式写给服务器。
+                Log.d("ready to send: ",content.toString());
+                connection.getOutputStream().write(content.toString().getBytes());//把数据以流的方式写给服务器。
                 connection.getOutputStream().close();
                 int code = connection.getResponseCode();
                 Log.i("code==" ,String.valueOf(code));
@@ -128,19 +141,13 @@ public class SignupFragment extends Fragment implements OnClickListener
             JSONObject out = null;
             try {
                 out = new JSONObject(result);
-                if(out.getString("status").equals("invalid")){
-                    Toast.makeText(getActivity(),"Sign up failed, please check the input or Log in",Toast.LENGTH_LONG).show();
-                }
                 if(out.getString("status").equals("11")){
-                    Toast.makeText(getActivity(),"Sign up succeed!",Toast.LENGTH_LONG).show();
-//                    Intent gotomap = new Intent(getActivity(),com.example.user.parkinglot.MapsActivity.class);
-//                    gotomap.putExtra("username",acc.getText().toString());
-//                    gotomap.putExtra("password",psw.getText().toString());
-//                    gotomap.putExtra("confirm password",conpsw.getText().toString());
-//                    gotomap.putExtra("email",email.getText().toString());
-//                    gotomap.putExtra("phone",phone.getText().toString());
-//                    startActivity(gotomap);
-
+                    Toast.makeText(getActivity(),"Sign up successful",Toast.LENGTH_LONG).show();
+                    try{
+                        ((login)getActivity()).savePublic(out.getString("public_key"));
+                    } catch(Exception e) {
+                        e.printStackTrace();
+                    }
                     LoginFragment fOne = new LoginFragment();
                     FragmentManager fm = getFragmentManager();
                     FragmentTransaction tx = fm.beginTransaction();
@@ -153,6 +160,20 @@ public class SignupFragment extends Fragment implements OnClickListener
                     editor.putString("password",psw.getText().toString());
                     editor.commit();
                 }
+                else{
+                    Toast.makeText(getActivity(),"Sign up failed",Toast.LENGTH_LONG).show();
+                }
+
+
+
+//                    Intent gotomap = new Intent(getActivity(),com.example.user.parkinglot.login.class);
+//                    gotomap.putExtra("username",acc.getText().toString());
+//                    gotomap.putExtra("password",psw.getText().toString());
+//                    gotomap.putExtra("confirm password",conpsw.getText().toString());
+//                    gotomap.putExtra("email",email.getText().toString());
+//                    gotomap.putExtra("phone",phone.getText().toString());
+//                    startActivity(gotomap);
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }

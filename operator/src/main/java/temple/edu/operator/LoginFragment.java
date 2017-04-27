@@ -1,4 +1,4 @@
-package com.example.user.parkinglot;
+package temple.edu.operator;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -23,29 +23,38 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-
-
-public class SignupFragment extends Fragment implements OnClickListener
+public class LoginFragment extends Fragment implements OnClickListener
 {
-    TextView acc,psw,conpsw,email,phone;
-    SharedPreferences settings;
+    TextView acc,psw;
     private Button button_login,button_signup;
-    final SignupFragment.HttpProcess httpProcess = new SignupFragment.HttpProcess();
+    LoginFragment.HttpProcess httpProcess = new LoginFragment.HttpProcess();
+    SharedPreferences settings;
+
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.signup_fragment, container, false);
         settings = getActivity().getSharedPreferences("account", Context.MODE_PRIVATE);
-        acc = (TextView) view.findViewById(R.id.editText1);
-        psw = (TextView) view.findViewById(R.id.editText2);
-        conpsw = (TextView) view.findViewById(R.id.editText3);
-        email = (TextView) view.findViewById(R.id.editText4);
-        phone = (TextView) view.findViewById(R.id.editText5);
+        String unm =settings.getString("name", "");
+        String psd =settings.getString("password", "");
+        View view = inflater.inflate(R.layout.fragment_login, container, false);
+
+
+
+        acc = (TextView) view.findViewById(R.id.uname);
+        psw = (TextView) view.findViewById(R.id.psw);
         button_signup = (Button) view.findViewById(R.id.button_signup);
         button_login = (Button) view.findViewById(R.id.button_login);
         button_signup.setOnClickListener(this);
         button_login.setOnClickListener(this);
+        if(!unm.isEmpty()){
+            acc.setText(unm);
+            psw.setText(psd);
+        }
+
+
         return view ;
+
+
     }
 
     @Override
@@ -54,26 +63,23 @@ public class SignupFragment extends Fragment implements OnClickListener
         switch (v.getId()){
 
             case R.id.button_login:
-                LoginFragment fOne = new LoginFragment();
-                FragmentManager fm = getFragmentManager();
-                FragmentTransaction tx = fm.beginTransaction();
-                tx.replace(R.id.id_content, fOne, "ONE");
-                tx.addToBackStack(null);
-                tx.commit();
-                break;
-            case R.id.button_signup:
                 JSONObject send = new JSONObject();
                 try {
                     send.put("username",acc.getText().toString()) ;
-                    send.put("email",email.getText().toString());
-                    send.put("phone",phone.getText().toString());
                     send.put("password",psw.getText().toString());
-                    send.put("password2",conpsw.getText().toString());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                httpProcess.setcontent("http://ssh.missingrain.live:8001/registration/register_user/",send);
+                httpProcess.setcontent("http://ssh.missingrain.live:8001/registration/login_user/",send);
                 httpProcess.execute();
+                break;
+            case R.id.button_signup:
+                SignupFragment fTwo = new SignupFragment();
+                FragmentManager fm = getFragmentManager();
+                FragmentTransaction tx = fm.beginTransaction();
+                tx.replace(R.id.id_content, fTwo, "TWO");
+                tx.addToBackStack(null);
+                tx.commit();
                 break;
 
         }
@@ -84,7 +90,7 @@ public class SignupFragment extends Fragment implements OnClickListener
         JSONObject content = null;
         @Override
         protected String doInBackground(String... params) {
-            //JSONObject account = new JSONObject(),send=new JSONObject();
+            JSONObject account = new JSONObject(),send=new JSONObject();
 
             String result="";
 
@@ -101,6 +107,7 @@ public class SignupFragment extends Fragment implements OnClickListener
                 connection.setRequestMethod("POST");
 //                account.put("username","Chenglong Fu");
 //                account.put("password","fcl199303");
+                Log.d("data to send",content.toString());
                 connection.getOutputStream().write(String.valueOf(content).getBytes());//把数据以流的方式写给服务器。
                 connection.getOutputStream().close();
                 int code = connection.getResponseCode();
@@ -125,37 +132,26 @@ public class SignupFragment extends Fragment implements OnClickListener
         @Override
         protected void onPostExecute(String result)
         {
+            Log.d("output",result);
             JSONObject out = null;
             try {
                 out = new JSONObject(result);
-                if(out.getString("status").equals("invalid")){
-                    Toast.makeText(getActivity(),"Sign up failed, please check the input or Log in",Toast.LENGTH_LONG).show();
+                if(out.getString("status").equals("01")){
+                    Toast.makeText(getActivity(),"login failed, please check the input or sign up",Toast.LENGTH_LONG).show();
+
                 }
+
                 if(out.getString("status").equals("11")){
-                    Toast.makeText(getActivity(),"Sign up succeed!",Toast.LENGTH_LONG).show();
-//                    Intent gotomap = new Intent(getActivity(),com.example.user.parkinglot.MapsActivity.class);
-//                    gotomap.putExtra("username",acc.getText().toString());
-//                    gotomap.putExtra("password",psw.getText().toString());
-//                    gotomap.putExtra("confirm password",conpsw.getText().toString());
-//                    gotomap.putExtra("email",email.getText().toString());
-//                    gotomap.putExtra("phone",phone.getText().toString());
-//                    startActivity(gotomap);
-
-                    LoginFragment fOne = new LoginFragment();
-                    FragmentManager fm = getFragmentManager();
-                    FragmentTransaction tx = fm.beginTransaction();
-                    tx.replace(R.id.id_content, fOne, "ONE");
-                    tx.addToBackStack(null);
-                    tx.commit();
-
                     SharedPreferences.Editor editor = settings.edit();
                     editor.putString("username",acc.getText().toString());
                     editor.putString("password",psw.getText().toString());
+                    editor.putBoolean("isLogin",true);
                     editor.commit();
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+
 
         }
 
@@ -165,6 +161,5 @@ public class SignupFragment extends Fragment implements OnClickListener
         }
 
     }
-
 
 }
